@@ -51,25 +51,25 @@
 namespace autodifk {
 namespace forward {
 
-inline DualScalar sin(const DualScalar& x) {
+inline constexpr DualScalar sin(const DualScalar& x) {
   return DualScalar(std::sin(x.value), x.derivative * std::cos(x.value));
 }
 
-inline DualScalar cos(const DualScalar& x) {
+inline constexpr DualScalar cos(const DualScalar& x) {
   return DualScalar(std::cos(x.value), -x.derivative * std::sin(x.value));
 }
 
-inline DualScalar tan(const DualScalar& x) {
+inline constexpr DualScalar tan(const DualScalar& x) {
   const double secant_x = 1.0 / std::cos(x.value);
   return DualScalar(std::tan(x.value), x.derivative * secant_x * secant_x);
 }
 
-inline DualScalar exp(const DualScalar& x) {
+inline constexpr DualScalar exp(const DualScalar& x) {
   const double exp_x = std::exp(x.value);
   return DualScalar(exp_x, x.derivative * exp_x);
 }
 
-inline DualScalar log(const DualScalar& x) {
+inline constexpr DualScalar log(const DualScalar& x) {
   CHECK_GT(x.value, 0.0);
   return DualScalar(std::log(x.value), x.derivative / x.value);
 }
@@ -83,7 +83,7 @@ inline DualScalar pow(const DualScalar& x, int k) {
                     x.derivative * static_cast<double>(k) * pow_x_km1);
 }
 
-inline DualScalar abs(const DualScalar& x) {
+inline constexpr DualScalar abs(const DualScalar& x) {
   return DualScalar(std::abs(x), x.derivative * sign(x.value));
 }
 

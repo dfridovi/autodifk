@@ -29,8 +29,10 @@ data/
 # Saved data.
 *.csv
 
-# Emacs backups.
+# Emacs stuff.
 *~
+.clang_complete
+cscope*
 
 # C extensions
 *.so
