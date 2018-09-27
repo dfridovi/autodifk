@@ -13,12 +13,10 @@ echo "SSH_REPO: ${SSH_REPO}"
 git config user.name "$GH_USER_NAME"
 git config user.email "$GH_USER_EMAIL"
 
-# Make documentation.
-#doxygen Doxyfile
-
 # Commit documentation in master.
-#cd ..
-git add documentation
+git add --all documentation/
+git status
+
 git commit -m "[ci skip] Automated documentation build for changeset ${SHA}."
 git push -u $SSH_REPO master
 
