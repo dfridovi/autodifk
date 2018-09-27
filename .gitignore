@@ -5,8 +5,8 @@ data/
 
 # Figures.
 */figures/
-*.eps
-*.jpg
+#*.eps
+#*.jpg
 
 # Compiled object files
 *.slo

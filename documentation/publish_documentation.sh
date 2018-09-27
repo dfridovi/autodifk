@@ -15,9 +15,7 @@ git config user.email "$GH_USER_EMAIL"
 
 # Commit documentation in master.
 git add --all documentation/
-git status
-
 git commit -m "[ci skip] Automated documentation build for changeset ${SHA}."
-git push -u $SSH_REPO master
+git push origin master
 
 echo "-- Successfully updated documentation!"
