@@ -2,7 +2,7 @@
 find_package(Doxygen)
 if (DOXYGEN_FOUND)
   # Find the Doxygen config file.
-  set(DOXYGEN_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/.Doxyfile")
+  set(DOXYGEN_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile")
 
   # Make the target.
   add_custom_target(documentation
