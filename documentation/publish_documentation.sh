@@ -12,7 +12,7 @@ git config user.name "$GH_USER_NAME"
 git config user.email "$GH_USER_EMAIL"
 
 # Make documentation.
-doxygen Doxyfile
+#doxygen Doxyfile
 
 # Commit documentation in master.
 cd ..
