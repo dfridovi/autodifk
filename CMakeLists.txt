@@ -3,7 +3,7 @@ project(autodifk C CXX)
 
 # Build options.
 option(BUILD_TESTS "Build tests" ON)
-option(BUILD_DOCUMENTATION "Build documentation" OFF)
+option(BUILD_DOCUMENTATION "Build documentation" ON)
 set(CMAKE_CXX_FLAGS "-Wno-deprecated-declarations")
 
 # Extra variables.
@@ -64,7 +64,7 @@ install(TARGETS autodifk DESTINATION /usr/local/lib)
 install(DIRECTORY ${CMAKE_INCLUDE_DIR}/ DESTINATION /usr/local/include/autodifk)
 
 # Find and build documentation.
-#if (BUILD_DOCUMENTATION)
-#  message("Build documentation is enabled.")
-#  add_subdirectory(documentation)
-#endif (BUILD_DOCUMENTATION)
+if (BUILD_DOCUMENTATION)
+  message("Build documentation is enabled.")
+  add_subdirectory(documentation)
+endif (BUILD_DOCUMENTATION)

@@ -19,6 +19,11 @@ branches:
 notifications:
   email: false
 
+before_install:
+  - openssl aes-256-cbc -K $encrypted_fb541bf77981_key \
+                        -iv $encrypted_fb541bf77981_iv \
+                        -in github_deploy_key.enc \
+                        -out github_deploy_key -d
 install:
   - echo $TRAVIS_OS_NAME
 #  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:tuleu/precise-backports; fi
@@ -56,11 +61,8 @@ script:
 
 after_success:
   # Make and publish documentation.
-  - git config credential.helper "store --file=.git/credentials"
-  - echo "https://${PA_TOKEN}:@github.com" > .git/credentials
-  - $(npm bin)/set-up-ssh --key "$encrypted_fb541bf77981_key" \
-                          --iv "$encrypted_fb541bf77981_iv" \
-                          --path-encrypted-key ".travis/github_deploy_key.enc"
+#  - git config credential.helper "store --file=.git/credentials"
+#  - echo "https://${PA_TOKEN}:@github.com" > .git/credentials
   - make documentation
   - cd ..
   - ./documentation/publish_documentation.sh
