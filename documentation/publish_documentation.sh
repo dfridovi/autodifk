@@ -15,7 +15,7 @@ git config user.email "$GH_USER_EMAIL"
 #doxygen Doxyfile
 
 # Commit documentation in master.
-cd ..
+#cd ..
 git add ${DOCUMENTATION_PATH}
 git commit -m "[ci skip] Automated documentation build for changeset ${CHANGESET}."
 git push -u origin master
