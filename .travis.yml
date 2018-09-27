@@ -1,7 +1,7 @@
 # SSH authorization so that travis can push documentation to the repository.
 env:
   global:
-    secure:
+    secure: "FlkSAz9RcwQ8AAYkP9wrFTVZAuOAThAZEpMEykMgUAIaFaCoVptMC2DY/ZA8gaGO1+WCd4xa5cAshzIsSzlxB54SPZXjODWXORzQ4bmleYDsaD0O0MapWQctsx7J09XIqYYDThK3njK43cZQ/Dxw8vIQTVxNd4I3H50r6ACD2BinpTx7FTaI9taAWold20Vc04+paB93edBLXi1wIM+4C7f9z2obIuvJH7Hqiv/ks0D6rAHZBRPtTMCKPGcxBzCbNQCrEaAYrAp/M2tzQ+RQDrvqXtvW4ZIK6PRPJEpySGYdhGlKK2Q01/XL/5EpudM4HdcxQ/K949xJB1i17DKsPVyY0b4yaq9qPkfE/dF4QvACb2vIlTZILmiOc1cquuKzzXw8PBpV368nL8nho3i0ggRtOCwq2WSbAt5arhCyWrxSXUY9IqCeQGdOAci/+LogriyZN4juW1+kfi2P/J5Zz0E+hE3PhRyA+2duIqNfyCki9IHFQ72O0MNKuQWFAe228HCzThn9bEkTcLfcPxefGk5kEtSs57avB7bHi7cr4ulqQW6ltODHO0A3o1wTkSFdVTHUgU4B28ZsUfqO4ktNIlhYBberrSkbLdAPKWimrcBHkgV+XIOiIH0Jih6pv/BkN4UdkG2DPf3urplYm4D2Eym8GW3S8OtcnH5anZclBnI="
 
 language: cpp
 
@@ -48,16 +48,19 @@ before_script:
   - mkdir bin
   - mkdir build
   - cd build
-  - cmake ..
+  - cmake -DCMAKE_BUILD_TYPE=Release ..
 
 script:
   - make -j4
   - ./run_tests
 
-#after_success:
+after_success:
   # Make and publish documentation.
-#  - git config credential.helper "store --file=.git/credentials"
-#  - echo "https://${PA_TOKEN}:@github.com" > .git/credentials
-#  - make documentation
-#  - cd ..
-#  - ./documentation/publish_documentation.sh
+  - git config credential.helper "store --file=.git/credentials"
+  - echo "https://${PA_TOKEN}:@github.com" > .git/credentials
+  - $(npm bin)/set-up-ssh --key "$encrypted_fb541bf77981_key" \
+                          --iv "$encrypted_fb541bf77981_iv" \
+                          --path-encrypted-key ".travis/github_deploy_key.enc"
+  - make documentation
+  - cd ..
+  - ./documentation/publish_documentation.sh

@@ -7,30 +7,17 @@ set -o errexit -o nounset
 DOCUMENTATION_PATH=documentation
 CHANGESET=$(git rev-parse --verify HEAD)
 
+# Set username and email. Hide email from crawlers.
+git config user.name "$GH_USER_NAME"
+git config user.email "$GH_USER_EMAIL"
+
 # Make documentation.
 doxygen Doxyfile
-
-# Make sure branches are up to date.
-git remote set-branches --add origin gh-pages
-git fetch origin
 
 # Commit documentation in master.
 cd ..
 git add ${DOCUMENTATION_PATH}
-git commit -m "adding documentation"
-
-# Check out gh-pages branch and merge documentation from master commit.
-git checkout gh-pages
-rm -r ${DOCUMENTATION_PATH}
-git checkout master ${DOCUMENTATION_PATH}
-
-# Add the merged changes and push.
-git commit -a -m "Automated documentation build for changeset ${CHANGESET}."
-git push -u origin gh-pages
-
-# Checkout master again and blow away generated docs.
-git checkout master
-git reset HEAD~1
-rm -r ${DOCUMENTATION_PATH}/html/ ${DOCUMENTATION_PATH}/latex/
+git commit -m "[ci skip] Automated documentation build for changeset ${CHANGESET}."
+git push -u origin master
 
 echo "-- Successfully updated documentation!"
