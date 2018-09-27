@@ -66,6 +66,7 @@ after_success:
 #  - echo "https://${PA_TOKEN}:@github.com" > .git/credentials
 #  - git remote rm origin
 #  - git remote add origin https://dfridovi:${PA_TOKEN}@github.com/dfridovi/autodifk.git
+  - git checkout master
   - make documentation
   - cd ..
   - ./documentation/publish_documentation.sh
