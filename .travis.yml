@@ -20,10 +20,8 @@ notifications:
   email: false
 
 before_install:
-  - openssl aes-256-cbc -K $encrypted_fb541bf77981_key \
-                        -iv $encrypted_fb541bf77981_iv \
-                        -in github_deploy_key.enc \
-                        -out github_deploy_key -d
+  - openssl aes-256-cbc -K $encrypted_fb541bf77981_key -iv $encrypted_fb541bf77981_iv -in github_deploy_key.enc -out github_deploy_key -d
+
 install:
   - echo $TRAVIS_OS_NAME
 #  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:tuleu/precise-backports; fi
