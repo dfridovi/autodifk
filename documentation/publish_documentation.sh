@@ -1,7 +1,7 @@
-#!/bin/bash -e
+#!/bin/bash
 
 # Quit on errors.
-set -o errexit -o nounset
+set -e
 
 # Settings.
 REPO=`git config remote.origin.url`
@@ -15,7 +15,8 @@ git config user.email "$GH_USER_EMAIL"
 
 # Commit documentation in master.
 git add --all documentation/
-git commit -m "[ci skip] Automated documentation build for changeset ${SHA}."
+git status
+git commit -am "[ci skip] Automated documentation build for changeset ${SHA}."
 git push $SSH_REPO master
 
 echo "-- Successfully updated documentation!"
