@@ -1,0 +1,74 @@
+# SSH authorization so that travis can push documentation to the repository.
+env:
+  global:
+    secure: "SfRvYXxscjKxR/4tjliVGsIJzJPi/QqQZaUkXyfRvq41lGZ0zgNeBOg3UGI5lZeqYkMFw22r673W7eon7sUyo4WC7ubc7LJGdNclBfMiTzDQY8b3/91aT+z6cbg3AfWQ9R5O22tGzaqefFrc2VLGJs5q4oquHUxXcm98dV0DO5KXPRXo83DJgG6n+/FnJkHMea8gZO3wzzmzxM0HI/4CcWpQ3TCguqIHQBhB/VxxWZDnBr6beG94YIycWZSBYLvXUzV2J8hiQF/+CSrafqkm1Ddl657dDvq1pqyeR4ZOZ79rtGEf9OePQWy826zJQv5ikmBfwC+zNK9Pih+THQP7IT4kpvls5HiJbqCRoEM0opfoqixHHso51ZM3AfJLQq5WAg/kqAn1l8gFCATcTDee6m0PXwefuYkM+mFAD4aangDEmpCjBINrXynbBAnMgVr7mzy/xQEYHucDXve5hTTy25zXkroNjF/EJRr5r8ZKR2czazT9kZbp0y2Mc6tR+8pSoGMI1ZiDYxxBrVgF5p2LuHCS1FoX6oK3c/VNvvHyXaQfoHxqlSxrptispTt+kFKfuMpuxirXI1wy1q47Owk7KrPy2creRvSXC/M2GgxyGDq3o6qLsi+Q2pliDjUAyDZJqWqjO+rr0VRZkJAP590dY1yR/2PUlUrWm8yMXYyAEPk="
+
+language: cpp
+
+compiler:
+  - gcc
+  #- clang
+
+os:
+  - linux
+
+branches:
+  only:
+    - master
+
+notifications:
+  email: false
+
+#before_install:
+#  - openssl aes-256-cbc -K $encrypted_fb541bf77981_key -iv $encrypted_fb541bf77981_iv -in github_deploy_key.enc -out github_deploy_key -d
+#  - chmod 600 github_deploy_key
+#  - eval `ssh-agent -s`
+#  - ssh-add github_deploy_key
+
+install:
+  - echo $TRAVIS_OS_NAME
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install --yes build-essential
+    doxygen libgflags-dev libgoogle-glog-dev mercurial cmake libatlas-base-dev; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install python-software-properties; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install gcc-4.8 g++-4.8; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 20; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 20; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo update-alternatives --config gcc; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo update-alternatives --config g++; fi
+
+before_script:
+  # Get Eigen. The apt-get version on 12.04 is too old; we need at least 3.1.0.
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then mkdir eigen && cd eigen; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then hg clone https://bitbucket.org/eigen/eigen; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cd eigen && hg update 3.2; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then mkdir build && cd build; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cmake -DCMAKE_BUILD_TYPE=Release ..; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then make -j4; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo make install; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cd ../../..; fi
+
+  # Configure and make.
+  - mkdir bin
+  - mkdir build
+  - cd build
+  - cmake -DCMAKE_BUILD_TYPE=Release ..
+
+script:
+  - make -j4
+  - ./run_tests
+
+after_success:
+  # Make and publish documentation.
+#  - git checkout master
+  - make documentation
+#  - cd ..
+#  - ./documentation/publish_documentation.sh
+
+deploy:
+  verbose: true
+  provider: pages
+  skip-cleanup: true
+  github-token: $PA_TOKEN
+  keep-history: true
+  on:
+    branch: master
