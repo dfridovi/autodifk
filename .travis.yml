@@ -19,17 +19,14 @@ branches:
 notifications:
   email: false
 
-before_install:
-  - openssl aes-256-cbc -K $encrypted_fb541bf77981_key -iv $encrypted_fb541bf77981_iv -in github_deploy_key.enc -out github_deploy_key -d
-  - chmod 600 github_deploy_key
-  - eval `ssh-agent -s`
-  - ssh-add github_deploy_key
+#before_install:
+#  - openssl aes-256-cbc -K $encrypted_fb541bf77981_key -iv $encrypted_fb541bf77981_iv -in github_deploy_key.enc -out github_deploy_key -d
+#  - chmod 600 github_deploy_key
+#  - eval `ssh-agent -s`
+#  - ssh-add github_deploy_key
 
 install:
   - echo $TRAVIS_OS_NAME
-#  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:tuleu/precise-backports; fi
-#  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; fi
-#  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update -qq; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install --yes build-essential
     doxygen libgflags-dev libgoogle-glog-dev mercurial cmake libatlas-base-dev; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install python-software-properties; fi
@@ -62,11 +59,16 @@ script:
 
 after_success:
   # Make and publish documentation.
-#  - git config credential.helper "store --file=.git/credentials"
-#  - echo "https://${PA_TOKEN}:@github.com" > .git/credentials
-#  - git remote rm origin
-#  - git remote add origin https://dfridovi:${PA_TOKEN}@github.com/dfridovi/autodifk.git
-  - git checkout master
+#  - git checkout master
   - make documentation
-  - cd ..
-  - ./documentation/publish_documentation.sh
+#  - cd ..
+#  - ./documentation/publish_documentation.sh
+
+deploy:
+  verbose: true
+  provider: pages
+  skip-cleanup: true
+  github-token: $PA_TOKEN
+  keep-history: true
+  on:
+    branch: master
