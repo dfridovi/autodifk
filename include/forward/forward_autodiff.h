@@ -58,7 +58,7 @@ template <typename F, size_t N_INPUTS, size_t N_OUTPUTS>
 class ForwardAutodiff {
  public:
   ~ForwardAutodiff() {}
-  explicit ForwardAutodiff(const F& functor) {}
+  explicit ForwardAutodiff(const F& functor) : functor_(functor) {}
 
   // Evaluate the functor and optionally populate the Jacobian of the functor.
   Eigen::Matrix<double, N_OUTPUTS, 1> Evaluate(
@@ -67,7 +67,7 @@ class ForwardAutodiff {
 
  private:
   const F functor_;
-};  //\struct ForwardAutodiff
+};  // class ForwardAutodiff
 
 // ------------------------------ IMPLEMENTATION ---------------------------- //
 
@@ -82,8 +82,7 @@ ForwardAutodiff<F, N_INPUTS, N_OUTPUTS>::Evaluate(
   // Convert input 'x' to DualScalar format. By default, all derivatives stored
   // in dual numbers are zero.
   Eigen::Matrix<DualScalar, N_INPUTS, 1> x_dual;
-  for (size_t ii = 0; ii < N_INPUTS; ii++)
-    x_dual(ii) = x(ii);
+  for (size_t ii = 0; ii < N_INPUTS; ii++) x_dual(ii) = x(ii);
 
   // Create return container.
   Eigen::Matrix<double, N_OUTPUTS, 1> output;
@@ -95,18 +94,17 @@ ForwardAutodiff<F, N_INPUTS, N_OUTPUTS>::Evaluate(
     x_dual(jj).derivative = 1.0;
 
     // Evaluate functor on DualScalars.
-    output_dual = functor_(x_dual);
+    const auto output_dual = functor_(x_dual);
     CHECK_EQ(output_dual.size(), N_OUTPUTS);
 
     // If this is the first time through, fill in the output container.
     if (jj == 0) {
-      for (size_t ii = 0; ii < N_OUTPUTS; ii++)
-        output(ii) = output_dual.value;
+      for (size_t ii = 0; ii < N_OUTPUTS; ii++) output(ii) = output_dual(ii).value;
     }
 
     // Set corresponding column of Jacobian.
     for (size_t ii = 0; ii < N_OUTPUTS; ii++)
-      (*jacobian)(ii, jj) = output_dual.derivative;
+      (*jacobian)(ii, jj) = output_dual(ii).derivative;
 
     // Reset input partial derivative to 0.0 in this dimension.
     x_dual(jj).derivative = 0.0;
