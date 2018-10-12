@@ -63,6 +63,10 @@ struct DualScalar {
   DualScalar(double v, double d) : value(v), derivative(d) {}
 
   // Unary arithmetic operators.
+  DualScalar operator-() const {
+    return DualScalar(-value, -derivative);
+  }
+
   DualScalar& operator+=(const DualScalar& rhs) {
     value += rhs.value;
     derivative += rhs.derivative;

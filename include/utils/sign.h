@@ -59,7 +59,7 @@ inline constexpr int sign(T x, std::true_type is_signed) {
 
 template <typename T>
 inline constexpr int sign(T x) {
-  return signum(x, std::is_signed<T>());
+  return sign(x, std::is_signed<T>());
 }
 
 }  // namespace autodifk

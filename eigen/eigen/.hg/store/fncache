@@ -24,6 +24,7 @@ data/test/eigen2/linearstructure.cpp.i
 data/bench/btl/generic_bench/init/init_function.hh.i
 data/doc/snippets/Jacobi_makeGivens.cpp.i
 data/bench/btl/data/mean.cxx.i
+data/Eigen/src/Core/PartialReduxEvaluator.h.i
 data/Eigen/src/Core/Zero.h.i
 data/cmake/FindTaucs.cmake.i
 data/blas/complex_single.cpp.i
@@ -352,6 +353,7 @@ data/unsupported/Eigen/src/NonLinear/qform.h.i
 data/Eigen/src/SparseCore/SparseCompressedBase.h.i
 data/tvmet-1.7.1/testsuite/TestUnFunc.cc.i
 data/unsupported/test/matrix_functions.h.i
+data/doc/snippets/MatrixBase_colwise_iterator_cxx11.cpp.i
 data/blas/f2c/dsbmv.c.i
 data/tvmet-1.7.1/testsuite/TestMatrixEval.cc.i
 data/doc/examples/class_DynBlock.cpp.i
@@ -1184,6 +1186,7 @@ data/unsupported/Eigen/src/NonLinearOptimization/qrfac.h.i
 data/test/half_float.cpp.i
 data/bench/sparse_product.cpp.i
 data/bench/btl/generic_bench/utils/dump_file_x_y.hh.i
+data/test/stl_iterators.cpp.i
 data/doc/TutorialBlockOperations.dox.i
 data/cmake/EigenUninstall.cmake.i
 data/unsupported/test/cxx11_tensor_patch_sycl.cpp.i
@@ -2675,6 +2678,7 @@ data/unsupported/Eigen/src/NonLinearOptimization/HybridNonLinearSolver.h.i
 data/unsupported/test/cxx11_tensor_contract_gpu.cu.i
 data/Eigen/src/Core/MathFunctionsImpl.h.i
 data/test/linearstructure.cpp.i
+data/Eigen/src/Core/StlIterators.h.i
 data/tvmet-1.7.1/doc/misc.dox.i
 data/test/array_reverse.cpp.i
 data/Eigen/Core/Coeffs.h.i

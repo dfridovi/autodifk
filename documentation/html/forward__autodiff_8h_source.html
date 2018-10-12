@@ -147,7 +147,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="classautodifk_1_1forward_1_1_forward_autodiff.html">   58</a></span>&#160;<span class="keyword">class </span><a class="code" href="classautodifk_1_1forward_1_1_forward_autodiff.html">ForwardAutodiff</a> {</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  ~<a class="code" href="classautodifk_1_1forward_1_1_forward_autodiff.html">ForwardAutodiff</a>() {}</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classautodifk_1_1forward_1_1_forward_autodiff.html">ForwardAutodiff</a>(<span class="keyword">const</span> F&amp; functor) {}</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classautodifk_1_1forward_1_1_forward_autodiff.html">ForwardAutodiff</a>(<span class="keyword">const</span> F&amp; functor) : functor_(functor) {}</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="comment">// Evaluate the functor and optionally populate the Jacobian of the functor.</span></div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  Eigen::Matrix&lt;double, N_OUTPUTS, 1&gt; Evaluate(</div>
@@ -156,7 +156,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keyword">const</span> F functor_;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;};  <span class="comment">//\struct ForwardAutodiff</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;};  <span class="comment">// class ForwardAutodiff</span></div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment">// ------------------------------ IMPLEMENTATION ---------------------------- //</span></div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
@@ -171,43 +171,41 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// Convert input &#39;x&#39; to DualScalar format. By default, all derivatives stored</span></div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="comment">// in dual numbers are zero.</span></div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  Eigen::Matrix&lt;DualScalar, N_INPUTS, 1&gt; x_dual;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> ii = 0; ii &lt; N_INPUTS; ii++)</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    x_dual(ii) = x(ii);</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="comment">// Create return container.</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  Eigen::Matrix&lt;double, N_OUTPUTS, 1&gt; output;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="comment">// Evaluate the functor once for each input to compute the corresponding</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="comment">// column of the Jacobian.</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> jj = 0; jj &lt; N_INPUTS; jj++) {</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="comment">// Set input partial derivative in this dimension to 1.0.</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    x_dual(jj).derivative = 1.0;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="comment">// Evaluate functor on DualScalars.</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    output_dual = functor_(x_dual);</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    CHECK_EQ(output_dual.size(), N_OUTPUTS);</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="comment">// If this is the first time through, fill in the output container.</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordflow">if</span> (jj == 0) {</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> ii = 0; ii &lt; N_OUTPUTS; ii++)</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        output(ii) = output_dual.value;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    }</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="comment">// Set corresponding column of Jacobian.</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> ii = 0; ii &lt; N_OUTPUTS; ii++)</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      (*jacobian)(ii, jj) = output_dual.derivative;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="comment">// Reset input partial derivative to 0.0 in this dimension.</span></div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    x_dual(jj).derivative = 0.0;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  }</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <span class="keywordflow">return</span> output;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;}</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;}  <span class="comment">// namespace forward</span></div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;}  <span class="comment">// namespace autodifk</span></div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> ii = 0; ii &lt; N_INPUTS; ii++) x_dual(ii) = x(ii);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="comment">// Create return container.</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  Eigen::Matrix&lt;double, N_OUTPUTS, 1&gt; output;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="comment">// Evaluate the functor once for each input to compute the corresponding</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="comment">// column of the Jacobian.</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> jj = 0; jj &lt; N_INPUTS; jj++) {</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="comment">// Set input partial derivative in this dimension to 1.0.</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    x_dual(jj).derivative = 1.0;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="comment">// Evaluate functor on DualScalars.</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keyword">const</span> <span class="keyword">auto</span> output_dual = functor_(x_dual);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    CHECK_EQ(output_dual.size(), N_OUTPUTS);</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="comment">// If this is the first time through, fill in the output container.</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordflow">if</span> (jj == 0) {</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> ii = 0; ii &lt; N_OUTPUTS; ii++) output(ii) = output_dual(ii).value;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    }</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="comment">// Set corresponding column of Jacobian.</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> ii = 0; ii &lt; N_OUTPUTS; ii++)</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;      (*jacobian)(ii, jj) = output_dual(ii).derivative;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="comment">// Reset input partial derivative to 0.0 in this dimension.</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    x_dual(jj).derivative = 0.0;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  }</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="keywordflow">return</span> output;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;}</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;}  <span class="comment">// namespace forward</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;}  <span class="comment">// namespace autodifk</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="classautodifk_1_1forward_1_1_forward_autodiff_html"><div class="ttname"><a href="classautodifk_1_1forward_1_1_forward_autodiff.html">autodifk::forward::ForwardAutodiff</a></div><div class="ttdef"><b>Definition:</b> <a href="forward__autodiff_8h_source.html#l00058">forward_autodiff.h:58</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
