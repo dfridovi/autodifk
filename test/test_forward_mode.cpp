@@ -90,11 +90,13 @@ class NumericalDiff {
   const double delta_;
 };  // class NumericalDiff
 
-// Scalar-valued functor to test gradients on. Templates the () operator.
 // Make sure to specify that we might be using 'tan' to mean 'std::tan' OR our
-// own tangent function defined on DualScalars.
+// own tangent function defined on DualScalars. Same for other functions.
+using std::cos;
+using std::sin;
 using std::tan;
 
+// Scalar-valued functor to test gradients on. Templates the () operator.
 struct ScalarFunctor {
   template <typename T>
   Eigen::Matrix<T, 1, 1> operator()(const Eigen::Matrix<T, 1, 1>& x) const {
@@ -104,6 +106,19 @@ struct ScalarFunctor {
     return output;
   }
 };  // struct ScalarFunctor
+
+// Vector-valued functor to test gradients on. Templates the () operator.
+struct VectorFunctor {
+  template <typename T>
+  Eigen::Matrix<T, 2, 1> operator()(const Eigen::Matrix<T, 2, 1>& x) const {
+    Eigen::Matrix<T, 2, 1> output;
+    output(0) = -x(0) * (x(1) - 1.0) * cos(x(1)) + x(1) * sin(x(0));
+    output(1) = x(1) * (x(0) - 1.0) * cos(x(1) - x(1) * sin(x(0)));
+
+    return output;
+  }
+};  // struct VectorFunctor
+
 }  // namespace
 
 // Test forward mode autodifferentiator on an arbitrary scalar function.
@@ -129,6 +144,35 @@ TEST(ForwardAutodiff, TestScalar) {
     // Make sure that the Jacobians are close.
     constexpr double kSmallNumber = 1e-3;
     EXPECT_LT(std::abs(automatic_jacobian(0) - numerical_jacobian(0)),
+              kSmallNumber);
+  }
+}
+
+// Test forward mode autodifferentiator on an arbitrary vector function.
+TEST(ForwardAutodiff, TestVector) {
+  const VectorFunctor functor;
+  ForwardAutodiff<VectorFunctor, 2, 2> automatic_diff(functor);
+  NumericalDiff<VectorFunctor, 2, 2> numerical_diff(functor);
+
+  // Check that gradients match at a bunch of random points.
+  std::random_device rd;
+  std::default_random_engine rng(rd());
+  std::uniform_real_distribution<double> unif(0.0, 1.0);
+
+  constexpr size_t kNumRandomTests = 100;
+  Eigen::Matrix<double, 2, 1> x;
+  Eigen::Matrix<double, 2, 2> automatic_jacobian, numerical_jacobian;
+  for (size_t ii = 0; ii < kNumRandomTests; ii++) {
+    x(0) = unif(rng);
+    x(1) = unif(rng);
+
+    // Evaluate and get derivatives.
+    automatic_diff.Evaluate(x, &automatic_jacobian);
+    numerical_diff.Evaluate(x, &numerical_jacobian);
+
+    // Make sure that the Jacobians are close.
+    constexpr double kSmallNumber = 1e-3;
+    EXPECT_LT((automatic_jacobian - numerical_jacobian).lpNorm<Eigen::Infinity>(),
               kSmallNumber);
   }
 }
