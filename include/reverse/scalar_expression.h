@@ -39,8 +39,6 @@
 // to form a graph on which derivatives may be propagated backward via the
 // chain rule.
 //
-// Templated on the number of input ScalarExpressions, N.
-//
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifndef AUTODIFK_REVERSE_SCALAR_EXPRESSION_H
@@ -78,8 +76,12 @@ class ScalarExpression {
     if (subexpressions_.empty()) return value;
 
     for (auto& sub : subexpressions_) sub.ForwardPass();
+    return ForwardPropagateValue();
   }
-  void BackwardPass() {}
+  void BackwardPass() {
+    BackwardPropagateDerivative();
+    for (auto& sub : subexpressions_) sub.BackwardPass();
+  }
 
  private:
   // Check any specific properties of the subexpressions.
