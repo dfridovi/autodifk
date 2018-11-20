@@ -68,13 +68,13 @@ class ScalarExpression {
   // Construct from subexpressions. Automatically calls a virtual  method to
   // check any properties of the subexpressions.
   ScalarExpression(const std::vector<ScalarExpression>& subexpressions)
-    : value(0.0), derivative(0.0), subexpressions_(subexpressions) {
+      : value(0.0), derivative(0.0), subexpressions_(subexpressions) {
     CHECK(CheckSubexpressions());
   }
 
   // Forward and backward passes.
-  // NOTE! We will always assume that ForwardPass is called before BackwardPass, so
-  // that values throughout the graph are up to date.
+  // NOTE! We will always assume that ForwardPass is called before BackwardPass,
+  // so that values throughout the graph are up to date.
   double ForwardPass() {
     if (subexpressions_.empty()) return value;
 
@@ -90,14 +90,19 @@ class ScalarExpression {
   // Check any specific properties of the subexpressions.
   virtual bool CheckSubexpressions() const { return true; }
 
-  // Pure virtual functions.
+  // Must be implemented in derived classes.
+  // NOTE: Not pure virtual so that the compiler can allocate memory correctly.
   // Compute the value of this expression from the values of each subexpression.
   // Returns the value and also sets the public member variable 'value'.
-  virtual double ForwardPropagateValue() = 0;
+  virtual double ForwardPropagateValue() {
+    CHECK(false) << "Not implemented.";
+  };
 
   // Compute the gradient of the final expression against all subexpressions.
   // Sets the 'derivative' field of all subexpressions.
-  virtual void BackwardPropagateDerivative() = 0;
+  virtual void BackwardPropagateDerivative() {
+    CHECK(false) << "Not implemented.";
+  }
 
   // All the expressions that this expression depends upon.
   std::vector<ScalarExpression> subexpressions_;
