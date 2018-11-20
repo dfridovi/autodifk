@@ -52,49 +52,47 @@
 namespace autodifk {
 namespace reverse {
 
-template <size_t N>
-struct Sum : public ScalarExpression<N> {
+struct Sum : public ScalarExpression {
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // struct Sum
 
-template <size_t N>
-struct Product : public ScalarExpression<N> {
+struct Product : public ScalarExpression {
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // struct Product
 
-struct Sin : public ScalarExpression<1> {
+struct Sin : public UnaryScalarExpression {
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // struct Sin
 
-struct Cos : public ScalarExpression<1> {
+struct Cos : public UnaryScalarExpression {
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // struct Cos
 
-struct Tan : public ScalarExpression<1> {
+struct Tan : public UnaryScalarExpression {
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // struct Tan
 
-struct Exp : public ScalarExpression<1> {
+struct Exp : public UnaryScalarExpression {
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // struct Exp
 
-struct Log : public ScalarExpression<1> {
+struct Log : public UnaryScalarExpression {
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // struct Log
 
-struct Abs : public ScalarExpression<1> {
+struct Abs : public UnaryScalarExpression {
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // struct Abs
 
-struct ReLU : public ScalarExpression<1> {
+struct ReLU : public UnaryScalarExpression {
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // struct ReLU

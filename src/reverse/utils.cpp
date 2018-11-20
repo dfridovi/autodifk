@@ -39,19 +39,22 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <autodifk/reverse/utils.h>
+#include <reverse/utils.h>
 
 #include <glog/logging.h>
+#include <cmath>
 #include <iostream>
 #include <memory>
+#include <numeric>
 #include <vector>
 
 namespace autodifk {
 namespace reverse {
 
+// Sum.
 double Sum::ForwardPropagateValue() {
   value = std::accumulate(subexpressions_.begin(), subexpressions_.end(), 0.0,
-                          [](const ScalarExpression& expression, double s) {
+                          [](double s, const ScalarExpression& expression) {
                             return s + expression.value;
                           });
   return value;
@@ -61,41 +64,94 @@ void Sum::BackwardPropagateDerivative() {
   for (auto& sub : subexpressions_) sub.derivative = derivative;
 }
 
+// Product.
 double Product::ForwardPropagateValue() {
-  value = std::accumulate(subexpressions_.begin(), subexpressions_.end(), 0.0,
-                          [](const ScalarExpression& expression, double s) {
+  value = std::accumulate(subexpressions_.begin(), subexpressions_.end(), 1.0,
+                          [](double s, const ScalarExpression& expression) {
                             return s * expression.value;
                           });
   return value;
 }
 
 void Product::BackwardPropagateDerivative() {
-  // NOTE: assumes that we've got an up-to-date value (i.e. we just did a
-  // full forward pass).
   for (auto& sub : subexpressions_)
     sub.derivative = derivative * value / sub.value;
 }
 
-double Sin::ForwardPropagateValue() {}
-void Sin::BackwardPropagateDerivative() {}
+// Sine.
+double Sin::ForwardPropagateValue() {
+  value = std::sin(subexpressions_[0].value);
+  return value;
+}
 
-double Cos::ForwardPropagateValue() {}
-void Cos::BackwardPropagateDerivative() {}
+void Sin::BackwardPropagateDerivative() {
+  subexpressions_[0].derivative =
+      derivative * std::cos(subexpressions_[0].value);
+}
 
-double Tan::ForwardPropagateValue() {}
-void Tan::BackwardPropagateDerivative() {}
+// Cosine.
+double Cos::ForwardPropagateValue() {
+  value = std::cos(subexpressions_[0].value);
+  return value;
+}
 
-double Exp::ForwardPropagateValue() {}
-void Exp::BackwardPropagateDerivative() {}
+void Cos::BackwardPropagateDerivative() {
+  subexpressions_[0].derivative =
+      -derivative * std::sin(subexpressions_[0].value);
+}
 
-double Log::ForwardPropagateValue() {}
-void Log::BackwardPropagateDerivative() {}
+// Tangent.
+double Tan::ForwardPropagateValue() {
+  value = std::tan(subexpressions_[0].value);
+  return value;
+}
 
-double Abs::ForwardPropagateValue() {}
-void Abs::BackwardPropagateDerivative() {}
+void Tan::BackwardPropagateDerivative() {
+  const double cosine = std::cos(subexpressions_[0].value);
+  subexpressions_[0].derivative = derivative / (cosine * cosine);
+}
 
-double ReLU::ForwardPropagateValue() {}
-void ReLU::BackwardPropagateDerivative() {}
+// Exponential.
+double Exp::ForwardPropagateValue() {
+  value = std::exp(subexpressions_[0].value);
+  return value;
+}
+
+void Exp::BackwardPropagateDerivative() {
+  subexpressions_[0].derivative = derivative * value;
+}
+
+// Natural logarithm.
+double Log::ForwardPropagateValue() {
+  value = std::log(subexpressions_[0].value);
+  return value;
+}
+
+void Log::BackwardPropagateDerivative() {
+  subexpressions_[0].derivative = derivative / subexpressions_[0].value;
+}
+
+// Absolute value.
+double Abs::ForwardPropagateValue() {
+  value = std::abs(subexpressions_[0].value);
+  return value;
+}
+
+void Abs::BackwardPropagateDerivative() {
+  subexpressions_[0].derivative =
+      derivative * ((subexpressions_[0].value >= 0.0) ? 1.0 : -1.0);
+}
+
+// Rectified linear unit.
+double ReLU::ForwardPropagateValue() {
+  value = (subexpressions_[0].value >= 0.0) ? subexpressions_[0].value : 0.0;
+  return value;
+}
+
+void ReLU::BackwardPropagateDerivative() {
+  subexpressions_[0].derivative =
+      derivative * ((subexpressions_[0].value >= 0.0) ? 1.0 : 0.0);
+}
 
 }  // namespace reverse
 }  // namespace autodifk

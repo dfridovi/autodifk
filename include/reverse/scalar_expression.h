@@ -60,18 +60,21 @@ class ScalarExpression {
   double derivative;
 
   // Builtin constructors.
+  virtual ~ScalarExpression() {}
   ScalarExpression() : value(0.0), derivative(0.0) {}
   ScalarExpression(double v) : value(v), derivative(0.0) {}
-  ScalarExpression(double v, derivative d) : value(v), derivative(d) {}
+  ScalarExpression(double v, double d) : value(v), derivative(d) {}
 
   // Construct from subexpressions. Automatically calls a virtual  method to
   // check any properties of the subexpressions.
   ScalarExpression(const std::vector<ScalarExpression>& subexpressions)
-      : ScalarExpression(), subexpressions_(subexpressions) {
+    : value(0.0), derivative(0.0), subexpressions_(subexpressions) {
     CHECK(CheckSubexpressions());
   }
 
   // Forward and backward passes.
+  // NOTE! We will always assume that ForwardPass is called before BackwardPass, so
+  // that values throughout the graph are up to date.
   double ForwardPass() {
     if (subexpressions_.empty()) return value;
 
@@ -83,7 +86,7 @@ class ScalarExpression {
     for (auto& sub : subexpressions_) sub.BackwardPass();
   }
 
- private:
+ protected:
   // Check any specific properties of the subexpressions.
   virtual bool CheckSubexpressions() const { return true; }
 
@@ -99,6 +102,14 @@ class ScalarExpression {
   // All the expressions that this expression depends upon.
   std::vector<ScalarExpression> subexpressions_;
 };  // class ScalarExpression
+
+// Derived class for unary expressions.
+class UnaryScalarExpression : public ScalarExpression {
+ private:
+  virtual bool CheckSubexpressions() const {
+    return subexpressions_.size() == 1;
+  }
+};  // class UnaryScalarExpression
 
 }  // namespace reverse
 }  // namespace autodifk
