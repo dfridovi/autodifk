@@ -34,6 +34,7 @@
  * Authors: David Fridovich-Keil   ( dfk@eecs.berkeley.edu )
  */
 
+#include <reverse/scalar_expression.h>
 #include <reverse/utils.h>
 
 #include <utils/numerical_diff.h>
@@ -42,13 +43,30 @@
 #include <gtest/gtest.h>
 #include <random>
 
+namespace {
+// Scalar-valued functor.
+struct ScalarFunctor {
+  template <typename T>
+  Eigen::Matrix<T, 1, 1> operator()(const Eigen::Matrix<T, 1, 1>& x) const {
+    Eigen::Matrix<T, 1, 1> output;
+    output(0) = -x(0) * (x(0) - 1.0) * tan(x(0));
+
+    return output;
+  }
+};  // struct ScalarFunctor
+}  // namespace
+
 namespace autodifk {
 namespace reverse {
 
 // Test reverse mode autodifferentiator on an arbitrary scalar function.
 TEST(ReverseAutodiff, TestScalar) {
+  ConstantScalarExpression input;
+  Sum temp({input, -1.0});
+  Product output({-1.0, temp, Tan({input})});
+
+  // Make a copy of this function for numerical differentiation.
   const ScalarFunctor functor;
-  ForwardAutodiff<ScalarFunctor, 1, 1> automatic_diff(functor);
   NumericalDiff<ScalarFunctor, 1, 1> numerical_diff(functor);
 
   // Check that gradients match at a bunch of random points.
@@ -57,17 +75,21 @@ TEST(ReverseAutodiff, TestScalar) {
   std::uniform_real_distribution<double> unif(0.0, 1.0);
 
   constexpr size_t kNumRandomTests = 100;
-  Eigen::Matrix<double, 1, 1> x, automatic_derivative, numerical_derivative;
+  Eigen::Matrix<double, 1, 1> x, numerical_derivative;
   for (size_t ii = 0; ii < kNumRandomTests; ii++) {
     x(0) = unif(rng);
+    input.value = x(0);
 
-    // Evaluate and get derivatives.
-    automatic_diff.Evaluate(x, &automatic_derivative);
+    // Evaluate and get numerical derivative.
     numerical_diff.Evaluate(x, &numerical_derivative);
+
+    // Evaluate and get analytic derivative.
+    output.ForwardPass();
+    output.BackwardPass();
 
     // Make sure that the derivatives are close.
     constexpr double kSmallNumber = 1e-3;
-    EXPECT_LT(std::abs(automatic_derivative(0) - numerical_derivative(0)),
+    EXPECT_LT(std::abs(output.derivative - numerical_derivative(0)),
               kSmallNumber);
   }
 }

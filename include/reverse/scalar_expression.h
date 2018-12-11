@@ -67,7 +67,13 @@ class ScalarExpression {
 
   // Construct from subexpressions. Automatically calls a virtual  method to
   // check any properties of the subexpressions.
-  ScalarExpression(const std::vector<ScalarExpression>& subexpressions)
+  ScalarExpression(const std::vector<ScalarExpression> subexpressions)
+      : value(0.0), derivative(0.0), subexpressions_(subexpressions) {
+    CHECK(CheckSubexpressions());
+  }
+
+  ScalarExpression(
+      const std::initializer_list<ScalarExpression>& subexpressions)
       : value(0.0), derivative(0.0), subexpressions_(subexpressions) {
     CHECK(CheckSubexpressions());
   }
@@ -110,11 +116,25 @@ class ScalarExpression {
 
 // Derived class for unary expressions.
 class UnaryScalarExpression : public ScalarExpression {
+ public:
+  using ScalarExpression::ScalarExpression;
+
  private:
   virtual bool CheckSubexpressions() const {
     return subexpressions_.size() == 1;
   }
 };  // class UnaryScalarExpression
+
+// Derived class for constant expressions.
+class ConstantScalarExpression : public ScalarExpression {
+ public:
+  using ScalarExpression::ScalarExpression;
+
+ private:
+  bool CheckSubexpressions() const { return subexpressions_.empty(); }
+  double ForwardPropagateValue() { return value; }
+  void BackwardPropagateDerivative() {}
+};  // class ConstantScalarExpression
 
 }  // namespace reverse
 }  // namespace autodifk

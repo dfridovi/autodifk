@@ -52,50 +52,86 @@
 namespace autodifk {
 namespace reverse {
 
-struct Sum : public ScalarExpression {
-  double ForwardPropagateValue();
-  void BackwardPropagateDerivative();
-};  // struct Sum
+class Sum : public ScalarExpression {
+ public:
+  using ScalarExpression::ScalarExpression;
 
-struct Product : public ScalarExpression {
+ private:
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
-};  // struct Product
+};  // class Sum
 
-struct Sin : public UnaryScalarExpression {
-  double ForwardPropagateValue();
-  void BackwardPropagateDerivative();
-};  // struct Sin
+class Product : public ScalarExpression {
+ public:
+  using ScalarExpression::ScalarExpression;
 
-struct Cos : public UnaryScalarExpression {
+ private:
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
-};  // struct Cos
+};  // class Product
 
-struct Tan : public UnaryScalarExpression {
-  double ForwardPropagateValue();
-  void BackwardPropagateDerivative();
-};  // struct Tan
+class Sin : public UnaryScalarExpression {
+ public:
+  using UnaryScalarExpression::UnaryScalarExpression;
 
-struct Exp : public UnaryScalarExpression {
+ private:
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
-};  // struct Exp
+};  // class Sin
 
-struct Log : public UnaryScalarExpression {
-  double ForwardPropagateValue();
-  void BackwardPropagateDerivative();
-};  // struct Log
+class Cos : public UnaryScalarExpression {
+ public:
+  using UnaryScalarExpression::UnaryScalarExpression;
 
-struct Abs : public UnaryScalarExpression {
+ private:
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
-};  // struct Abs
+};  // class Cos
 
-struct ReLU : public UnaryScalarExpression {
+class Tan : public UnaryScalarExpression {
+ public:
+  using UnaryScalarExpression::UnaryScalarExpression;
+
+ private:
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
-};  // struct ReLU
+};  // class Tan
+
+class Exp : public UnaryScalarExpression {
+ public:
+  using UnaryScalarExpression::UnaryScalarExpression;
+
+ private:
+  double ForwardPropagateValue();
+  void BackwardPropagateDerivative();
+};  // class Exp
+
+class Log : public UnaryScalarExpression {
+ public:
+  using UnaryScalarExpression::UnaryScalarExpression;
+
+ private:
+  double ForwardPropagateValue();
+  void BackwardPropagateDerivative();
+};  // class Log
+
+class Abs : public UnaryScalarExpression {
+ public:
+  using UnaryScalarExpression::UnaryScalarExpression;
+
+ private:
+  double ForwardPropagateValue();
+  void BackwardPropagateDerivative();
+};  // class Abs
+
+class ReLU : public UnaryScalarExpression {
+ public:
+  using UnaryScalarExpression::UnaryScalarExpression;
+
+ private:
+  double ForwardPropagateValue();
+  void BackwardPropagateDerivative();
+};  // class ReLU
 
 }  // namespace reverse
 }  // namespace autodifk
