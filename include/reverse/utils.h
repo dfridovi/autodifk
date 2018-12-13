@@ -54,81 +54,180 @@ namespace reverse {
 
 class Sum : public ScalarExpression {
  public:
-  using ScalarExpression::ScalarExpression;
+  typedef std::shared_ptr<Sum> Ptr;
+  typedef std::shared_ptr<const Sum> ConstPtr;
+
+  static Ptr Create(const std::vector<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Sum(subexpressions));
+  }
+  static Ptr Create(
+      const std::initializer_list<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Sum(subexpressions));
+  }
 
  private:
+  using ScalarExpression::ScalarExpression;
+
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // class Sum
 
 class Product : public ScalarExpression {
  public:
-  using ScalarExpression::ScalarExpression;
+  typedef std::shared_ptr<Product> Ptr;
+  typedef std::shared_ptr<const Product> ConstPtr;
+
+  static Ptr Create(const std::vector<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Product(subexpressions));
+  }
+  static Ptr Create(
+      const std::initializer_list<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Product(subexpressions));
+  }
 
  private:
+  using ScalarExpression::ScalarExpression;
+
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // class Product
 
 class Sin : public UnaryScalarExpression {
  public:
-  using UnaryScalarExpression::UnaryScalarExpression;
+  typedef std::shared_ptr<Sin> Ptr;
+  typedef std::shared_ptr<const Sin> ConstPtr;
+
+  static Ptr Create(const std::vector<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Sin(subexpressions));
+  }
+  static Ptr Create(
+      const std::initializer_list<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Sin(subexpressions));
+  }
 
  private:
+  using UnaryScalarExpression::UnaryScalarExpression;
+
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // class Sin
 
 class Cos : public UnaryScalarExpression {
  public:
-  using UnaryScalarExpression::UnaryScalarExpression;
+  typedef std::shared_ptr<Cos> Ptr;
+  typedef std::shared_ptr<const Cos> ConstPtr;
+
+  static Ptr Create(const std::vector<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Cos(subexpressions));
+  }
+  static Ptr Create(
+      const std::initializer_list<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Cos(subexpressions));
+  }
 
  private:
+  using UnaryScalarExpression::UnaryScalarExpression;
+
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // class Cos
 
 class Tan : public UnaryScalarExpression {
  public:
-  using UnaryScalarExpression::UnaryScalarExpression;
+  typedef std::shared_ptr<Tan> Ptr;
+  typedef std::shared_ptr<const Tan> ConstPtr;
+
+  static Ptr Create(const std::vector<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Tan(subexpressions));
+  }
+  static Ptr Create(
+      const std::initializer_list<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Tan(subexpressions));
+  }
 
  private:
+  using UnaryScalarExpression::UnaryScalarExpression;
+
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // class Tan
 
 class Exp : public UnaryScalarExpression {
  public:
-  using UnaryScalarExpression::UnaryScalarExpression;
+  typedef std::shared_ptr<Exp> Ptr;
+  typedef std::shared_ptr<const Exp> ConstPtr;
+
+  static Ptr Create(const std::vector<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Exp(subexpressions));
+  }
+  static Ptr Create(
+      const std::initializer_list<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Exp(subexpressions));
+  }
 
  private:
+  using UnaryScalarExpression::UnaryScalarExpression;
+
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // class Exp
 
 class Log : public UnaryScalarExpression {
  public:
-  using UnaryScalarExpression::UnaryScalarExpression;
+  typedef std::shared_ptr<Log> Ptr;
+  typedef std::shared_ptr<const Log> ConstPtr;
+
+  static Ptr Create(const std::vector<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Log(subexpressions));
+  }
+  static Ptr Create(
+      const std::initializer_list<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Log(subexpressions));
+  }
 
  private:
+  using UnaryScalarExpression::UnaryScalarExpression;
+
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // class Log
 
 class Abs : public UnaryScalarExpression {
  public:
-  using UnaryScalarExpression::UnaryScalarExpression;
+  typedef std::shared_ptr<Abs> Ptr;
+  typedef std::shared_ptr<const Abs> ConstPtr;
+
+  static Ptr Create(const std::vector<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Abs(subexpressions));
+  }
+  static Ptr Create(
+      const std::initializer_list<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new Abs(subexpressions));
+  }
 
  private:
+  using UnaryScalarExpression::UnaryScalarExpression;
+
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // class Abs
 
 class ReLU : public UnaryScalarExpression {
  public:
-  using UnaryScalarExpression::UnaryScalarExpression;
+  typedef std::shared_ptr<ReLU> Ptr;
+  typedef std::shared_ptr<const ReLU> ConstPtr;
+
+  static Ptr Create(const std::vector<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new ReLU(subexpressions));
+  }
+  static Ptr Create(
+      const std::initializer_list<ScalarExpression::Ptr>& subexpressions) {
+    return Ptr(new ReLU(subexpressions));
+  }
 
  private:
+  using UnaryScalarExpression::UnaryScalarExpression;
+
   double ForwardPropagateValue();
   void BackwardPropagateDerivative();
 };  // class ReLU

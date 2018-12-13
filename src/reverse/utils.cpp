@@ -53,104 +53,106 @@ namespace reverse {
 
 // Sum.
 double Sum::ForwardPropagateValue() {
-  value = std::accumulate(subexpressions_.begin(), subexpressions_.end(), 0.0,
-                          [](double s, const ScalarExpression& expression) {
-                            return s + expression.value;
-                          });
+  value =
+      std::accumulate(subexpressions_.begin(), subexpressions_.end(), 0.0,
+                      [](double s, const ScalarExpression::Ptr& expression) {
+                        return s + expression->value;
+                      });
   return value;
 }
 
 void Sum::BackwardPropagateDerivative() {
-  for (auto& sub : subexpressions_) sub.derivative = derivative;
+  for (auto& sub : subexpressions_) sub->derivative += derivative;
 }
 
 // Product.
 double Product::ForwardPropagateValue() {
-  value = std::accumulate(subexpressions_.begin(), subexpressions_.end(), 1.0,
-                          [](double s, const ScalarExpression& expression) {
-                            return s * expression.value;
-                          });
+  value =
+      std::accumulate(subexpressions_.begin(), subexpressions_.end(), 1.0,
+                      [](double s, const ScalarExpression::Ptr& expression) {
+                        return s * expression->value;
+                      });
   return value;
 }
 
 void Product::BackwardPropagateDerivative() {
   for (auto& sub : subexpressions_)
-    sub.derivative = derivative * value / sub.value;
+    sub->derivative += derivative * value / sub->value;
 }
 
 // Sine.
 double Sin::ForwardPropagateValue() {
-  value = std::sin(subexpressions_[0].value);
+  value = std::sin(subexpressions_[0]->value);
   return value;
 }
 
 void Sin::BackwardPropagateDerivative() {
-  subexpressions_[0].derivative =
-      derivative * std::cos(subexpressions_[0].value);
+  subexpressions_[0]->derivative +=
+      derivative * std::cos(subexpressions_[0]->value);
 }
 
 // Cosine.
 double Cos::ForwardPropagateValue() {
-  value = std::cos(subexpressions_[0].value);
+  value = std::cos(subexpressions_[0]->value);
   return value;
 }
 
 void Cos::BackwardPropagateDerivative() {
-  subexpressions_[0].derivative =
-      -derivative * std::sin(subexpressions_[0].value);
+  subexpressions_[0]->derivative +=
+      -derivative * std::sin(subexpressions_[0]->value);
 }
 
 // Tangent.
 double Tan::ForwardPropagateValue() {
-  value = std::tan(subexpressions_[0].value);
+  value = std::tan(subexpressions_[0]->value);
   return value;
 }
 
 void Tan::BackwardPropagateDerivative() {
-  const double cosine = std::cos(subexpressions_[0].value);
-  subexpressions_[0].derivative = derivative / (cosine * cosine);
+  const double cosine = std::cos(subexpressions_[0]->value);
+  subexpressions_[0]->derivative += derivative / (cosine * cosine);
 }
 
 // Exponential.
 double Exp::ForwardPropagateValue() {
-  value = std::exp(subexpressions_[0].value);
+  value = std::exp(subexpressions_[0]->value);
   return value;
 }
 
 void Exp::BackwardPropagateDerivative() {
-  subexpressions_[0].derivative = derivative * value;
+  subexpressions_[0]->derivative += derivative * value;
 }
 
 // Natural logarithm.
 double Log::ForwardPropagateValue() {
-  value = std::log(subexpressions_[0].value);
+  value = std::log(subexpressions_[0]->value);
   return value;
 }
 
 void Log::BackwardPropagateDerivative() {
-  subexpressions_[0].derivative = derivative / subexpressions_[0].value;
+  subexpressions_[0]->derivative += derivative / subexpressions_[0]->value;
 }
 
 // Absolute value.
 double Abs::ForwardPropagateValue() {
-  value = std::abs(subexpressions_[0].value);
+  value = std::abs(subexpressions_[0]->value);
   return value;
 }
 
 void Abs::BackwardPropagateDerivative() {
-  subexpressions_[0].derivative =
-      derivative * ((subexpressions_[0].value >= 0.0) ? 1.0 : -1.0);
+  subexpressions_[0]->derivative +=
+      derivative * ((subexpressions_[0]->value >= 0.0) ? 1.0 : -1.0);
 }
 
 // Rectified linear unit.
 double ReLU::ForwardPropagateValue() {
-  value = (subexpressions_[0].value >= 0.0) ? subexpressions_[0].value : 0.0;
+  value = (subexpressions_[0]->value >= 0.0) ? subexpressions_[0]->value : 0.0;
   return value;
 }
 
 void ReLU::BackwardPropagateDerivative() {
-  subexpressions_[0].derivative =
-      derivative * ((subexpressions_[0].value >= 0.0) ? 1.0 : 0.0);
+  subexpressions_[0]->derivative +=
+      derivative * ((subexpressions_[0]->value >= 0.0) ? 1.0 : 0.0);
 }
 
 }  // namespace reverse

@@ -59,78 +59,96 @@ class ScalarExpression {
   double value;
   double derivative;
 
-  // Builtin constructors.
+  // Typedef some shared pointers.
+  typedef std::shared_ptr<ScalarExpression> Ptr;
+  typedef std::shared_ptr<const ScalarExpression> ConstPtr;
+
+  // Destructor.
   virtual ~ScalarExpression() {}
+
+  // Forward and backward passes.
+  // NOTE! We will always assume that ForwardPass is called before BackwardPass,
+  // so that values throughout the graph are up to date.
+  // NOTE! Because this will happen before a BackwardPass, we will zero out
+  // all derivatives so that they can accumulate properly.
+  double ForwardPass() {
+    derivative = 0.0;
+    if (subexpressions_.empty()) return value;
+
+    for (auto& sub : subexpressions_) sub->ForwardPass();
+    return ForwardPropagateValue();
+  }
+  void BackwardPass() {
+    BackwardPropagateDerivative();
+    for (auto& sub : subexpressions_) sub->BackwardPass();
+  }
+
+ protected:
   ScalarExpression() : value(0.0), derivative(0.0) {}
   ScalarExpression(double v) : value(v), derivative(0.0) {}
   ScalarExpression(double v, double d) : value(v), derivative(d) {}
 
-  // Construct from subexpressions. Automatically calls a virtual  method to
-  // check any properties of the subexpressions.
-  ScalarExpression(const std::vector<ScalarExpression> subexpressions)
+  ScalarExpression(const std::vector<ScalarExpression::Ptr>& subexpressions)
       : value(0.0), derivative(0.0), subexpressions_(subexpressions) {
     CHECK(CheckSubexpressions());
   }
 
   ScalarExpression(
-      const std::initializer_list<ScalarExpression>& subexpressions)
+      const std::initializer_list<ScalarExpression::Ptr>& subexpressions)
       : value(0.0), derivative(0.0), subexpressions_(subexpressions) {
     CHECK(CheckSubexpressions());
   }
 
-  // Forward and backward passes.
-  // NOTE! We will always assume that ForwardPass is called before BackwardPass,
-  // so that values throughout the graph are up to date.
-  double ForwardPass() {
-    if (subexpressions_.empty()) return value;
-
-    for (auto& sub : subexpressions_) sub.ForwardPass();
-    return ForwardPropagateValue();
-  }
-  void BackwardPass() {
-    BackwardPropagateDerivative();
-    for (auto& sub : subexpressions_) sub.BackwardPass();
-  }
-
- protected:
   // Check any specific properties of the subexpressions.
-  virtual bool CheckSubexpressions() const { return true; }
+  virtual bool CheckSubexpressions() const {
+    for (const auto& sub : subexpressions_) {
+      if (!sub) return false;
+    }
+
+    return true;
+  }
 
   // Must be implemented in derived classes.
-  // NOTE: Not pure virtual so that the compiler can allocate memory correctly.
   // Compute the value of this expression from the values of each subexpression.
   // Returns the value and also sets the public member variable 'value'.
-  virtual double ForwardPropagateValue() {
-    CHECK(false) << "Not implemented.";
-  };
+  virtual double ForwardPropagateValue() = 0;
 
-  // Compute the gradient of the final expression against all subexpressions.
-  // Sets the 'derivative' field of all subexpressions.
-  virtual void BackwardPropagateDerivative() {
-    CHECK(false) << "Not implemented.";
-  }
+  // Compute the gradient of the final expression against all
+  // subexpressions. Sets the 'derivative' field of all subexpressions.
+  virtual void BackwardPropagateDerivative() = 0;
 
   // All the expressions that this expression depends upon.
-  std::vector<ScalarExpression> subexpressions_;
+  std::vector<ScalarExpression::Ptr> subexpressions_;
 };  // class ScalarExpression
 
 // Derived class for unary expressions.
 class UnaryScalarExpression : public ScalarExpression {
  public:
+ protected:
   using ScalarExpression::ScalarExpression;
 
- private:
   virtual bool CheckSubexpressions() const {
-    return subexpressions_.size() == 1;
+    return subexpressions_.size() == 1 && subexpressions_[0];
   }
 };  // class UnaryScalarExpression
 
 // Derived class for constant expressions.
 class ConstantScalarExpression : public ScalarExpression {
  public:
-  using ScalarExpression::ScalarExpression;
+  // Typedef some shared pointers.
+  typedef std::shared_ptr<ConstantScalarExpression> Ptr;
+  typedef std::shared_ptr<const ConstantScalarExpression> ConstPtr;
+
+  // Factory methods.
+  static Ptr Create() { return Ptr(new ConstantScalarExpression()); }
+  static Ptr Create(double v) { return Ptr(new ConstantScalarExpression(v)); }
+  static Ptr Create(double v, double d) {
+    return Ptr(new ConstantScalarExpression(v, d));
+  }
 
  private:
+  using ScalarExpression::ScalarExpression;
+
   bool CheckSubexpressions() const { return subexpressions_.empty(); }
   double ForwardPropagateValue() { return value; }
   void BackwardPropagateDerivative() {}

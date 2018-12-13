@@ -101,8 +101,7 @@ TEST(ForwardAutodiff, TestScalar) {
 
     // Make sure that the Jacobians are close.
     constexpr double kSmallNumber = 1e-3;
-    EXPECT_LT(std::abs(automatic_jacobian(0) - numerical_jacobian(0)),
-              kSmallNumber);
+    EXPECT_NEAR(automatic_jacobian(0), numerical_jacobian(0), kSmallNumber);
   }
 }
 
@@ -130,8 +129,9 @@ TEST(ForwardAutodiff, TestVector) {
 
     // Make sure that the Jacobians are close.
     constexpr double kSmallNumber = 1e-3;
-    EXPECT_LT((automatic_jacobian - numerical_jacobian).lpNorm<Eigen::Infinity>(),
-              kSmallNumber);
+    EXPECT_LT(
+        (automatic_jacobian - numerical_jacobian).lpNorm<Eigen::Infinity>(),
+        kSmallNumber);
   }
 }
 

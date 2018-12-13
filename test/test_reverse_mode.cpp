@@ -61,9 +61,10 @@ namespace reverse {
 
 // Test reverse mode autodifferentiator on an arbitrary scalar function.
 TEST(ReverseAutodiff, TestScalar) {
-  ConstantScalarExpression input;
-  Sum temp({input, -1.0});
-  Product output({-1.0, temp, Tan({input})});
+  auto input = ConstantScalarExpression::Create();
+  auto minus_one = ConstantScalarExpression::Create(-1.0);
+  auto temp = Sum::Create({input, minus_one});
+  auto output = Product::Create({minus_one, input, temp, Tan::Create({input})});
 
   // Make a copy of this function for numerical differentiation.
   const ScalarFunctor functor;
@@ -78,19 +79,22 @@ TEST(ReverseAutodiff, TestScalar) {
   Eigen::Matrix<double, 1, 1> x, numerical_derivative;
   for (size_t ii = 0; ii < kNumRandomTests; ii++) {
     x(0) = unif(rng);
-    input.value = x(0);
+    input->value = x(0);
 
     // Evaluate and get numerical derivative.
-    numerical_diff.Evaluate(x, &numerical_derivative);
+    const Eigen::Matrix<double, 1, 1> numerical_output =
+        numerical_diff.Evaluate(x, &numerical_derivative);
 
     // Evaluate and get analytic derivative.
-    output.ForwardPass();
-    output.BackwardPass();
+    output->ForwardPass();
 
-    // Make sure that the derivatives are close.
+    output->derivative = 1.0;
+    output->BackwardPass();
+
+    // Make sure that the values and derivatives are close.
     constexpr double kSmallNumber = 1e-3;
-    EXPECT_LT(std::abs(output.derivative - numerical_derivative(0)),
-              kSmallNumber);
+    EXPECT_NEAR(output->value, numerical_output(0), kSmallNumber);
+    EXPECT_NEAR(input->derivative, numerical_derivative(0), kSmallNumber);
   }
 }
 
