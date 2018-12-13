@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['forwardautodiff',['ForwardAutodiff',['../classautodifk_1_1forward_1_1_forward_autodiff.html',1,'autodifk::forward']]]
+  ['constantscalarexpression',['ConstantScalarExpression',['../classautodifk_1_1reverse_1_1_constant_scalar_expression.html',1,'autodifk::reverse']]],
+  ['cos',['Cos',['../classautodifk_1_1reverse_1_1_cos.html',1,'autodifk::reverse']]]
 ];

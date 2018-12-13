@@ -1,0 +1,81 @@
+\hypertarget{classautodifk_1_1reverse_1_1_scalar_expression}{\section{autodifk\-:\-:reverse\-:\-:Scalar\-Expression Class Reference}
+\label{classautodifk_1_1reverse_1_1_scalar_expression}\index{autodifk\-::reverse\-::\-Scalar\-Expression@{autodifk\-::reverse\-::\-Scalar\-Expression}}
+}
+Inheritance diagram for autodifk\-:\-:reverse\-:\-:Scalar\-Expression\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=0.895522cm]{classautodifk_1_1reverse_1_1_scalar_expression}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classautodifk_1_1reverse_1_1_scalar_expression_a99942f407a198eb41cd3229c0a2b8dc3}{typedef std\-::shared\-\_\-ptr\\*
+$<$ \hyperlink{classautodifk_1_1reverse_1_1_scalar_expression}{Scalar\-Expression} $>$ {\bfseries Ptr}}\label{classautodifk_1_1reverse_1_1_scalar_expression_a99942f407a198eb41cd3229c0a2b8dc3}
+
+\item 
+\hypertarget{classautodifk_1_1reverse_1_1_scalar_expression_a698d78b9940e968e633a026ee1ef14ec}{typedef std\-::shared\-\_\-ptr$<$ const \\*
+\hyperlink{classautodifk_1_1reverse_1_1_scalar_expression}{Scalar\-Expression} $>$ {\bfseries Const\-Ptr}}\label{classautodifk_1_1reverse_1_1_scalar_expression_a698d78b9940e968e633a026ee1ef14ec}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classautodifk_1_1reverse_1_1_scalar_expression_a2fd311a9ed6d6b577e3d8bfa508f778a}{double {\bfseries Forward\-Pass} ()}\label{classautodifk_1_1reverse_1_1_scalar_expression_a2fd311a9ed6d6b577e3d8bfa508f778a}
+
+\item 
+\hypertarget{classautodifk_1_1reverse_1_1_scalar_expression_a77e7fb568d55d68da0338e0d9a10d81f}{void {\bfseries Backward\-Pass} ()}\label{classautodifk_1_1reverse_1_1_scalar_expression_a77e7fb568d55d68da0338e0d9a10d81f}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classautodifk_1_1reverse_1_1_scalar_expression_ad164d707dec8ddcda763dd4860260466}{double {\bfseries value}}\label{classautodifk_1_1reverse_1_1_scalar_expression_ad164d707dec8ddcda763dd4860260466}
+
+\item 
+\hypertarget{classautodifk_1_1reverse_1_1_scalar_expression_a5abc7368882940867c6bd9dd69d78b0d}{double {\bfseries derivative}}\label{classautodifk_1_1reverse_1_1_scalar_expression_a5abc7368882940867c6bd9dd69d78b0d}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classautodifk_1_1reverse_1_1_scalar_expression_a7712b3a11b23ae7c082204efbe9b1715}{{\bfseries Scalar\-Expression} (double v)}\label{classautodifk_1_1reverse_1_1_scalar_expression_a7712b3a11b23ae7c082204efbe9b1715}
+
+\item 
+\hypertarget{classautodifk_1_1reverse_1_1_scalar_expression_ac4954f13405d688c716d7bb79537e86f}{{\bfseries Scalar\-Expression} (double v, double d)}\label{classautodifk_1_1reverse_1_1_scalar_expression_ac4954f13405d688c716d7bb79537e86f}
+
+\item 
+\hypertarget{classautodifk_1_1reverse_1_1_scalar_expression_a80fb01a8e7e88503dd543fc3ac5b3939}{{\bfseries Scalar\-Expression} (const std\-::vector$<$ Scalar\-Expression\-::\-Ptr $>$ \&subexpressions)}\label{classautodifk_1_1reverse_1_1_scalar_expression_a80fb01a8e7e88503dd543fc3ac5b3939}
+
+\item 
+\hypertarget{classautodifk_1_1reverse_1_1_scalar_expression_a86a8f5a65b0d6bb0f0ef0a48dab651eb}{{\bfseries Scalar\-Expression} (const std\-::initializer\-\_\-list$<$ Scalar\-Expression\-::\-Ptr $>$ \&subexpressions)}\label{classautodifk_1_1reverse_1_1_scalar_expression_a86a8f5a65b0d6bb0f0ef0a48dab651eb}
+
+\item 
+\hypertarget{classautodifk_1_1reverse_1_1_scalar_expression_a7cf1b9db84a62e39294c19fab45958ef}{virtual bool {\bfseries Check\-Subexpressions} () const }\label{classautodifk_1_1reverse_1_1_scalar_expression_a7cf1b9db84a62e39294c19fab45958ef}
+
+\item 
+\hypertarget{classautodifk_1_1reverse_1_1_scalar_expression_a358b7c4f8e2425d0e11c0e37c06ff665}{virtual double {\bfseries Forward\-Propagate\-Value} ()=0}\label{classautodifk_1_1reverse_1_1_scalar_expression_a358b7c4f8e2425d0e11c0e37c06ff665}
+
+\item 
+\hypertarget{classautodifk_1_1reverse_1_1_scalar_expression_aa25dc105d7ef6eb766383b5b0973957b}{virtual void {\bfseries Backward\-Propagate\-Derivative} ()=0}\label{classautodifk_1_1reverse_1_1_scalar_expression_aa25dc105d7ef6eb766383b5b0973957b}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classautodifk_1_1reverse_1_1_scalar_expression_a948076a05d2f5e36a48ee597c5c91d2d}{std\-::vector\\*
+$<$ Scalar\-Expression\-::\-Ptr $>$ {\bfseries subexpressions\-\_\-}}\label{classautodifk_1_1reverse_1_1_scalar_expression_a948076a05d2f5e36a48ee597c5c91d2d}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 55 of file scalar\-\_\-expression.\-h.
+
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+/home/travis/build/dfridovi/autodifk/include/reverse/scalar\-\_\-expression.\-h\end{DoxyCompactItemize}

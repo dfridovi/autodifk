@@ -38,6 +38,8 @@
 #include <forward/forward_autodiff.h>
 #include <forward/utils.h>
 
+#include <utils/numerical_diff.h>
+
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 #include <random>
@@ -46,50 +48,6 @@ namespace autodifk {
 namespace forward {
 
 namespace {
-// Forward-difference numerical differentiator.
-template <typename F, size_t N_INPUTS, size_t N_OUTPUTS>
-class NumericalDiff {
- public:
-  ~NumericalDiff() {}
-  NumericalDiff(const F& functor, double delta = 1e-4)
-      : functor_(functor), delta_(delta) {}
-
-  // Evaluate the functor and optionally populate the Jacobian of the functor.
-  Eigen::Matrix<double, N_OUTPUTS, 1> Evaluate(
-      const Eigen::Matrix<double, N_INPUTS, 1>& x,
-      Eigen::Matrix<double, N_OUTPUTS, N_INPUTS>* jacobian) {
-    // If no Jacobian is required, just evaluate the functor.
-    if (!jacobian) return functor_(x);
-
-    // Evaluate functor on input.
-    const Eigen::Matrix<double, N_OUTPUTS, 1> output = functor_(x);
-
-    // Create a copy of the input for use in computing numerical derivatives.
-    Eigen::Matrix<double, N_INPUTS, 1> perturbed_input(x);
-
-    // Evaluate the functor once for each input to compute the corresponding
-    // column of the Jacobian.
-    for (size_t jj = 0; jj < N_INPUTS; jj++) {
-      // Perturb input by delta_ along dimension jj.
-      perturbed_input(jj) += delta_;
-
-      // Compute functor output with this new input.
-      const Eigen::Matrix<double, N_INPUTS, 1> perturbed_output =
-          functor_(perturbed_input);
-      jacobian->col(jj) = (perturbed_output - output) / delta_;
-
-      // Reset perturbed_input(jj) to original value.
-      perturbed_input(jj) = x(jj);
-    }
-
-    return output;
-  }
-
- private:
-  const F functor_;
-  const double delta_;
-};  // class NumericalDiff
-
 // Make sure to specify that we might be using 'tan' to mean 'std::tan' OR our
 // own tangent function defined on DualScalars. Same for other functions.
 using std::cos;
@@ -143,8 +101,7 @@ TEST(ForwardAutodiff, TestScalar) {
 
     // Make sure that the Jacobians are close.
     constexpr double kSmallNumber = 1e-3;
-    EXPECT_LT(std::abs(automatic_jacobian(0) - numerical_jacobian(0)),
-              kSmallNumber);
+    EXPECT_NEAR(automatic_jacobian(0), numerical_jacobian(0), kSmallNumber);
   }
 }
 
@@ -172,8 +129,9 @@ TEST(ForwardAutodiff, TestVector) {
 
     // Make sure that the Jacobians are close.
     constexpr double kSmallNumber = 1e-3;
-    EXPECT_LT((automatic_jacobian - numerical_jacobian).lpNorm<Eigen::Infinity>(),
-              kSmallNumber);
+    EXPECT_LT(
+        (automatic_jacobian - numerical_jacobian).lpNorm<Eigen::Infinity>(),
+        kSmallNumber);
   }
 }
 

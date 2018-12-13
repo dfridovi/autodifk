@@ -7,8 +7,8 @@
 
 var indexSectionsWithContent =
 {
-  0: "df",
-  1: "df"
+  0: "acdeflnprstu",
+  1: "acdeflnprstu"
 };
 
 var indexSectionNames =
