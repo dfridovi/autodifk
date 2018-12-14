@@ -59,6 +59,9 @@ class ScalarExpression {
   double value;
   double derivative;
 
+  // Flag for whether this is a constant expression or not.
+  const bool is_constant;
+
   // Typedef some shared pointers.
   typedef std::shared_ptr<ScalarExpression> Ptr;
   typedef std::shared_ptr<const ScalarExpression> ConstPtr;
@@ -66,13 +69,20 @@ class ScalarExpression {
   // Destructor.
   virtual ~ScalarExpression() {}
 
+  // Zero everything out.
+  void Reset() {
+    derivative = 0.0;
+    if (is_constant) return;
+
+    value = 0.0;
+
+    for (auto& sub : subexpressions_) sub->Reset();
+  }
+
   // Forward and backward passes.
   // NOTE! We will always assume that ForwardPass is called before BackwardPass,
   // so that values throughout the graph are up to date.
-  // NOTE! Because this will happen before a BackwardPass, we will zero out
-  // all derivatives so that they can accumulate properly.
   double ForwardPass() {
-    derivative = 0.0;
     if (subexpressions_.empty()) return value;
 
     for (auto& sub : subexpressions_) sub->ForwardPass();
@@ -84,18 +94,27 @@ class ScalarExpression {
   }
 
  protected:
-  ScalarExpression() : value(0.0), derivative(0.0) {}
-  ScalarExpression(double v) : value(v), derivative(0.0) {}
-  ScalarExpression(double v, double d) : value(v), derivative(d) {}
+  ScalarExpression(bool is_constant = false)
+      : value(0.0), derivative(0.0), is_constant(is_constant) {}
+  ScalarExpression(double v, bool is_constant = false)
+      : value(v), derivative(0.0), is_constant(is_constant) {}
+  ScalarExpression(double v, double d)
+      : value(v), derivative(d), is_constant(false) {}
 
   ScalarExpression(const std::vector<ScalarExpression::Ptr>& subexpressions)
-      : value(0.0), derivative(0.0), subexpressions_(subexpressions) {
+      : value(0.0),
+        derivative(0.0),
+        is_constant(false),
+        subexpressions_(subexpressions) {
     CHECK(CheckSubexpressions());
   }
 
   ScalarExpression(
       const std::initializer_list<ScalarExpression::Ptr>& subexpressions)
-      : value(0.0), derivative(0.0), subexpressions_(subexpressions) {
+      : value(0.0),
+        derivative(0.0),
+        is_constant(false),
+        subexpressions_(subexpressions) {
     CHECK(CheckSubexpressions());
   }
 
@@ -142,12 +161,13 @@ class ConstantScalarExpression : public ScalarExpression {
   // Factory methods.
   static Ptr Create() { return Ptr(new ConstantScalarExpression()); }
   static Ptr Create(double v) { return Ptr(new ConstantScalarExpression(v)); }
-  static Ptr Create(double v, double d) {
-    return Ptr(new ConstantScalarExpression(v, d));
-  }
 
  private:
-  using ScalarExpression::ScalarExpression;
+  ConstantScalarExpression() : ScalarExpression(true) {}
+  ConstantScalarExpression(double v) : ScalarExpression(v, true) {}
+  //      : this->value(v),
+  //        this->derivative(0.0),
+  //        this->is_constant(true) {}
 
   bool CheckSubexpressions() const { return subexpressions_.empty(); }
   double ForwardPropagateValue() { return value; }
