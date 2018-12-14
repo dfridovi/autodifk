@@ -79,13 +79,15 @@ TEST(ReverseAutodiff, TestScalar) {
   Eigen::Matrix<double, 1, 1> x, numerical_derivative;
   for (size_t ii = 0; ii < kNumRandomTests; ii++) {
     x(0) = unif(rng);
-    input->value = x(0);
 
     // Evaluate and get numerical derivative.
     const Eigen::Matrix<double, 1, 1> numerical_output =
         numerical_diff.Evaluate(x, &numerical_derivative);
 
     // Evaluate and get analytic derivative.
+    output->Reset();
+
+    input->value = x(0);
     output->ForwardPass();
 
     output->derivative = 1.0;
